@@ -1,0 +1,106 @@
+*
+{
+	box-sizing: border-box;
+	font-family: cursive;
+	margin:0px;
+	padding:0px;
+}
+body
+{
+	background-color:#cccccc;
+}
+
+section
+{
+	border:1px solid black;
+}
+
+.main-header
+{
+	margin-left: auto;
+	margin-right: auto;
+	margin-top:30px;
+	margin-bottom:20px;
+	color:#2222ff;
+	text-align: center;
+	font-size:1.75em;
+}
+
+#first-header
+{
+	background-color:#bbbb22;
+}
+#second-header
+{
+	background-color:#bb22bb;
+}
+#third-header
+{
+	background-color:#22bbbb;
+}
+section > h1
+{
+	border:1px solid black;
+	float:right;
+	margin-top:-1px;
+	margin-right:-1px;
+	margin-bottom:5px;
+	padding:5px;
+	font-size:1.25em;
+}
+
+section
+{
+	width:31%;
+	margin-left:1%;
+	margin-right:1%;
+	margin-top:20px;
+	margin-bottom:20px;
+	vertical-align:top;
+	overflow: hidden;
+	background-color:#aaaaaa;
+	display:inline-block;	
+	height:100%;
+	/*
+	margin-bottom:0px;
+	padding-bottom:0px;
+	*/
+    
+}
+
+section > p
+{
+	padding: 45px 10px 10px 10px;
+}
+
+.source-link
+{
+	padding:10px;
+	float:right;
+}
+/* Large devices */
+@media (max-width:767px)
+{
+	body
+	{
+		background-color:#cceecc;
+	}
+	section
+	{
+		width:98%;
+	}
+}
+
+/* Middle devices */
+@media (min-width:768px) and (max-width:991px)
+{
+	body
+	{
+		background-color:#ccddcc;
+	}
+
+	section
+	{
+		width:47%;
+	}
+}
