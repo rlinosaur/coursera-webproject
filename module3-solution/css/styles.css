@@ -1,0 +1,73 @@
+*
+{
+	box-sizing: border-box;
+	/*font-family: cursive;*/
+	font-family: 'Didact Gothic', sans-serif;
+	margin:0px;
+	padding:0px;
+}
+body
+{
+	font-size: 16px;
+	background-color:#cccccc;
+	/*font-family: cursive;*/
+}
+
+
+#first-header
+{
+	background-color:#bbbb22;
+}
+#second-header
+{
+	background-color:#bb22bb;
+}
+#third-header
+{
+	background-color:#22bbbb;
+}
+section > h1
+{
+	border:1px solid black;
+	float:right;
+	margin-top:-1px;
+	margin-right:-1px;
+	margin-bottom:5px;
+	padding:5px;
+	font-size:1.25em;
+}
+
+section
+{
+	border:1px solid black;
+	width:31.3333%;
+	margin-left:1%;
+	margin-right:1%;
+	margin-top:10px;
+	margin-bottom:10px;
+	vertical-align:top;
+	overflow: hidden;
+	background-color:#aaaaaa;
+	display:inline-block;
+	position:relative;
+	/*Why I see some margin between sections without float:left?*/
+	float:left;
+	/*height:100%;*/
+	height:290px;
+	/*
+	margin-bottom:0px;
+	padding-bottom:0px;
+	*/
+    
+}
+
+section > p
+{
+	padding: 45px 10px 10px 10px;
+}
+
+.source-link
+{
+	padding:10px;
+	float:right;			
+}
