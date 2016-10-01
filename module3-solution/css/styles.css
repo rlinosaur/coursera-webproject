@@ -3,31 +3,31 @@ body
 	font-size: 16px;
 	background-color:#cccccc;
 	/*font-family: cursive;*/
+	margin-top:70px;
 }
 
 h1
 {
-	margin-top:70px;
 	margin-bottom:20px;
 	color:#2222bb;	
 	font-size:1.75em;
 }
-#first-header
+.first-header
 {
 	background-color:#bbbb22;
 	color:#2222bb;
 }
-#second-header
+.second-header
 {
 	background-color:#bb22bb;
 	color:#2222bb;
 }
-#third-header
+.third-header
 {
 	background-color:#22bbbb;
 	color:#2222bb;
 }
-section > h2
+section > h3
 {
 	border:1px solid black;
 	float:right;
@@ -47,7 +47,7 @@ section
 	background-color:#aaaaaa;
 	margin-top:15px;
 	margin-bottom:15px;
-	height:700px;
+	height:900px;
 }
 
 section > p
@@ -86,8 +86,27 @@ section > p
 .mobile-nav-menu-item
 {
 	/*border:1px solid #222222;*/
-	border-width: 0px 1px 1px 1px;
+	border-width: 1px 1px 1px 1px;
 	border-color: #222222;
 	border-style: solid;
 	margin:0px;
+}
+
+.my-anchor
+{
+	/*padding-top:150px;*/
+	/*margin-top:70px;*/
+}
+
+ul > li
+{
+	margin-top:-1px;
+	border:1px solid #222222;
+	color:red;
+}
+
+ul
+
+{
+	 background-color: #bbbbbb;
 }
