@@ -3,11 +3,12 @@ body
 	font-size: 16px;
 	background-color:#cccccc;
 	/*font-family: cursive;*/
-	margin-top:70px;
+	/*margin-top:70px;*/
 }
 
 h1
 {
+	margin-top: 20px;
 	margin-bottom:20px;
 	color:#2222bb;	
 	font-size:1.75em;
