@@ -53,6 +53,10 @@ Background.prototype.catchMice = function(event)
 		obj.speedX=(event.clientX-obj.X)/200;
 		obj.speedY=(event.clientY-obj.Y)/200;
 		*/
+		if (Math.abs(event.clientX-obj.X)<Math.abs(event.clientX-obj.X-obj.speedX))
+			obj.speedX*=-1;
+		if (Math.abs(event.clientY-obj.Y)<Math.abs(event.clientY-obj.Y-obj.speedY))
+			obj.speedY*=-1;
 	}
 
 

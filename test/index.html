@@ -5,15 +5,22 @@
   <title>Button test</title>  
   <link rel="stylesheet" href="css/interface.css" />
   <script src="js/button.js"></script> 
+  <script src="js/background.js"></script> 
+  <script src="js/scripts.js"></script> 
 </head>
 <body>
-  <div id="buttonTest" onclick="alert('Vasily!!!');">
+  <div id="buttonTest" onclick="backgroundTest.invertAction();" style="position:absolute;">
 
   </div>
+
+ <div id="backgroundTest" style="position:absolute;z-index:-1;">
+</div>
 <script type="text/javascript">
   var buttonTest = new ButtonLock('buttonTest',0.5*Math.PI);
   buttonTest.setSize(50,50);
   buttonTest.draw();
+
+ var backgroundTest = new Background('backgroundTest');
 </script>  
 </body>
 </html>
