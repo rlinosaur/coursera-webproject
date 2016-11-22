@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+  <head>    
+    <link rel="stylesheet" href="css/ol.css" />
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <style>
+      .map {
+       /* height: 400px;
+        width: 400px;*/
+      }
+       .rotate-north {
+        top: 65px;
+        left: .5em;
+      }
+      .ol-touch .rotate-north {
+        top: 80px;
+      }
+    </style>
+    <script src="js/ol.js"></script>
+    <script src="js/jquery-2.2.3.min.js"></script>
+    <!--<script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>-->
+    <script src="js/bootstrap.min.js"></script>
+    <title>OpenLayers 3 example</title>
+  </head>
+  <body>
+    <h2>Supermap</h2>
+    <!--
+    <div id="mapWithControls" style="width:500px;height:500px;border:1px solid green;display:inline-block;z-index:1000;">
+      <div id="mapControls" style="border:1px solid red; width:500px;height:100px;position:absolute;background-color:#2299cc;">
+        <input type="checkbox" value="mecha" name="еьфу">Njabthh</input>
+        <input type="checkbox" value="mecha" name="еьфу">Njabthh</input>
+        <input type="checkbox" value="mecha" name="еьфу">Njabthh</input>
+      </div>
+      -->
+      <div id="map" class="map">
+        <div id="mapPopupMarker"></div>        
+      </div>      
+    <!--</div>-->
+    <script type="text/javascript">      
+
+        //По идее - всплывающее окно с текстом для субкладов (но поглядим.)
+      //вот с этим оверлеем и надо бы разобраться, вот что я вам скажу, дорогие мои.
+      var subcladesPopupElement = document.getElementById('mapPopupSubclades');
+      var subcladesPopup = new ol.Overlay({
+        element: subcladesPopupElement,
+        //positioning: 'bottom-center',
+        //positioning: 'top-left',
+        stopEvent: false,
+        offset: [0, 0]//смещение...вроде как какие задал координаты, такие и будут,да.
+      });
+
+    /////////////////////////////////////////////////////////////////////////////////
+    //ВНИМАНИЕ! ДАЛЕЕ СЛЕДУЕТ КУСОК КОДА, КОТОРЫЙ Я НЕ ПОНИМАЮ ИЛИ В КОТОРОМ ЛЕНЮСЬ РАЗБИРАТЬСЯ
+    //СМЫСЛ. СОЗДАЁТСЯ КНОПКА И ВРОДЕ КАК ЧТО-ТО КУДА-ТО НАСЛЕДУЕТСЯ (возможно функция передаётся OpenLayers, а возможно и нет)
+    //БУДЕТ ВРЕМЯ - РАЗБЕРИСЬ, ТУТ ИНТЕРЕСНО
+    /////////////////////////////////////////////////////////////////////////////////
+     window.app = {};
+      var app = window.app;
+      //
+      // Define rotate to north control.
+      //
+
+
+      /**
+       * @constructor
+       * @extends {ol.control.Control}
+       * @param {Object=} opt_options Control options.
+       */
+      app.RotateNorthControl = function(opt_options) {
+
+        console.log("we are here, bro");
+        var options = opt_options || {};
+
+        var button = document.createElement('button');
+        button.innerHTML = 'Subclades';
+        button.style.width='100%';
+
+        var this_ = this;        
+        var handleRotateNorth = function()
+        {
+          var test=document.getElementById('divWithInfo');
+          if(test.style.display==='none') test.style.display='block';
+            else test.style.display='none';
+          subcladesPopup.setPosition(ol.proj.fromLonLat([37.36,55.45]));
+        };
+        //handleRotateNorth заменить на открытие Popup-окошка с субкладами (можно даже не то чтобы открыть, а следать видимым)
+        button.addEventListener('click', handleRotateNorth, false);
+        button.addEventListener('touchstart', handleRotateNorth, false);
+
+
+        var divWithInfo = document.createElement('div');
+        
+        divWithInfo.id='divWithInfo';
+        divWithInfo.style.display='none';
+        divWithInfo.style.width='500px';
+        divWithInfo.style.height='500px';
+        divWithInfo.style['background-color']='rgba(0x22, 0x99, 0xcc, .7)';
+        divWithInfo.style.overflow='auto';        
+
+        //divWithInfo.innerHTML='Hello people!';
+        divWithInfo.appendChild(document.createTextNode('Hello People!'));
+
+        var buttonApply = document.createElement('button');
+        buttonApply.innerHTML='Apply';
+        buttonApply.style.width='50px';
+        buttonApply.onclick=function(){alert('Sorry, function doesn\'t work yet. Please comeback later!');};
+        divWithInfo.appendChild(buttonApply);
+
+        divWithInfo.appendChild(document.createElement("br"));
+        var i;
+        for(i=0;i<7;i++)
+        {
+          var checkbox = document.createElement('input');
+          var label = document.createElement('label');
+          //he.innerHTML='"Subclade №'+i+'"';
+          //he.value='"Subclade №'+i+'"';
+          //he.setAttribute('value','My default value')
+          checkbox.type="checkbox";          
+          checkbox.id="subcladecheck_"+i;          
+          label.htmlFor = checkbox.id;
+          label.appendChild(document.createTextNode('Subclade №'+i));
+          //label.style.color='rgba('+Math.random()*50+200 +', '+Math.random()*50+200+', '+Math.random()*50+200 +', .7)';          
+          label.style.color='rgba('+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+', 1.0)';
+          divWithInfo.appendChild(checkbox);
+          divWithInfo.appendChild(label);
+          divWithInfo.appendChild(document.createElement("br"));
+        }
+
+        var element = document.createElement('div');
+        element.className = 'rotate-north ol-unselectable ol-control';
+        element.appendChild(button);
+        element.appendChild(divWithInfo);
+
+        ol.control.Control.call(this, {
+          element: element,
+          target: options.target
+        });
+
+      };
+      ol.inherits(app.RotateNorthControl, ol.control.Control);
+
+      //КОНЕЦ СТРАННОГО КОДА
+      ///////////////////////////
+
+
+
+
+    var styles = {        
+        'icon': new ol.style.Style({
+          image: new ol.style.Icon({
+            anchor: [0.5, 1],
+            src: 'images/testflag_small.png'
+          })       
+        })
+      };
+
+      var startMarker = new ol.Feature({
+        type: 'icon',
+        name: 'Null Island',
+        population: 1000,
+        rainfall: 200,
+        geometry: new ol.geom.Point(ol.proj.fromLonLat([37.41, 8.82]))
+      });
+      var endMarker = new ol.Feature({
+        type: 'icon',
+        name: 'Default city subclade',
+        population: 3000,
+        rainfall: 400,
+        geometry: new ol.geom.Point(ol.proj.fromLonLat([37.36,55.45]))
+      });
+
+      var vectorLayer = new ol.layer.Vector({
+        source: new ol.source.Vector({
+          features: [startMarker, endMarker]
+        })
+        ,
+        style: function(feature) {          
+          return styles[feature.get('type')];
+        }
+      });
+
+      var map = new ol.Map({
+        controls: ol.control.defaults({
+          attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
+            collapsible: false
+          })
+        }).extend([
+          new app.RotateNorthControl()
+        ]),
+        target: 'map'});
+
+      //Добавляем оверлей с субкладами (ну по крайней мере мы думаем, что там будут субклады)
+      //Но только после создания карты, ага. Не до!
+      //map.addOverlay(subcladesPopup);
+      subcladesPopup.setPosition(ol.proj.fromLonLat([37.36,55.45]));
+      //subcladesPopup.setPosition(ol.proj.fromLonLat([37.36,55.45]));
+      //subcladesPopup.setPosition(ol.proj.fromLonLat(ol.geom.Point([150, 150])));
+      
+
+      map.setView(new ol.View({
+        center: ol.proj.fromLonLat([37.36,55.45]),
+        zoom: 4,
+        rotation: Math.PI / 5
+      }));
+      var tileLayer=new ol.layer.Tile({
+            source: new ol.source.OSM()            
+          });
+      map.addLayer(tileLayer);
+      map.addLayer(vectorLayer);
+
+      //всплываюсчее окно с текстом для маркера
+      var element = document.getElementById('mapPopupMarker');
+      var popup = new ol.Overlay({
+        element: element,
+        positioning: 'bottom-center',
+        stopEvent: false,
+        offset: [0, -50]
+      });
+      map.addOverlay(popup);
+   
+      
+
+
+      // Отображение всплывающего окна, ага. display popup on click
+      map.on('click', function(evt) {
+        var feature = map.forEachFeatureAtPixel(evt.pixel,
+            function(feature) {
+              return feature;
+            });
+        if (feature) {
+          var coordinates = feature.getGeometry().getCoordinates();
+          popup.setPosition(coordinates);
+          $(element).popover({
+            'placement': 'top',
+            'html': true,
+            'content': feature.get('name')
+          });
+          $(element).popover('show');
+        } else {
+          $(element).popover('destroy');
+        }
+      });
+
+      //map.removeLayer(tileLayer);
+      
+     //http://dev.openlayers.org/examples/markers.html - пример со встроенными кнопками. ага.
+
+     //Как добавлять много-много флажков на карту:
+     //https://openlayers.org/en/latest/examples/cluster.html
+     //При желании оттуда же можно выцепить и оцветнение каждого кластера нужным цветом
+
+     //Иконки с webGL!!!
+     //не лучший вариант, наверное, но прикольно!
+     //https://openlayers.org/en/latest/examples/icon-sprite-webgl.html
+
+     //Кликабельные иконки. Элегантненько.
+     //https://openlayers.org/en/latest/examples/icon.html
+
+     //Прикольный пример со всплывающим окном
+     //https://openlayers.org/en/latest/examples/popup.html
+     //Что мы из него можем извлечь? Ну, пожалуй, ничего особенного.
+     //Разве что использовать для отображения субкладов (типа нажал на кнопку - получи попап с субкладами). с прокруткой и всеми делами.
+     //пожалуй это тоже вариант не хуже, чем выпадающий список. А может это как раз тот вариант, который и нужен.
+
+
+     //Оверлеи здесь! (ну всякие штуки, которые надо или не надо отображать на карте)
+
+    </script>
+  </body>
+</html>
