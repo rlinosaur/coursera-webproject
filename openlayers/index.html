@@ -6,6 +6,9 @@
       НАЧАЛО КУСКА HTML <HEAD> ДЛЯ РАБОТЫ С КАРТОЙ
       Ссылки на библиотеки js и таблицы css можно заменить на внешние
       -->   
+      <link rel="stylesheet" href="https://openlayers.org/en/v3.19.1/css/ol.css" type="text/css">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
       <link rel="stylesheet" href="css/ol.css" />
       <link rel="stylesheet" href="css/bootstrap.min.css">
     <style>
@@ -21,6 +24,12 @@
         top: 80px;
       }
     </style>
+
+    <script src="https://openlayers.org/en/v3.19.1/build/ol.js"></script>
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+
     <script src="js/ol.js"></script>
     <script src="js/jquery-2.2.3.min.js"></script>    
     <script src="js/bootstrap.min.js"></script>
@@ -96,10 +105,24 @@
     <!--</div>-->
 
      
-
+    <!--RLIN_MESSAGE
+     НАЧАЛО JS-скрипта ДЛЯ РАБОТЫ С КАРТОЙ-->     
     <script type="text/javascript">
+
+    //ВНИМАНИЕ! НЕОБХОДИМО ЭКРАНИРОВАТЬ КАВЫЧКИ В НАЗВАНИЯХ СУБКЛАДОВ!
+    //Хотя они только у Венедов. Но всё же.
+    var subArray=[
+           {subclade:"m129", name:'A-Unknown',color:"green"}
+          ,{subclade:"m1164",name:'R1b-P312 > Z40481 > ZZ11 > DF27/S250 > Z195/Z196',color:"rgba(180,120,34,0.5)"}
+          ,{subclade:"m4",name:'R1a-Z92+, Y4459+, YP617+, YP569+ "Veneds"  (please, order R1a-Z280 SNP Pack)',color:"#2299cc"}];
+
+
+    var styleCache = {};//Кэш стилей (на самом деле цветов). Должно ускорить работу.
+
+    var markerLayers = new Array();//Пустой массив слоёв маркеров. Именовать будем по именам! (ибо нефиг, хотя...да, небольшие расчёты современному компу не повредят))) )
     /////////////////////////////////////////////////////////////////////////////////
     //ВНИМАНИЕ! ДАЛЕЕ СЛЕДУЕТ КУСОК КОДА, КОТОРЫЙ Я НЕ ПОНИМАЮ ИЛИ В КОТОРОМ ЛЕНЮСЬ РАЗБИРАТЬСЯ
+    //Это из примеров OpenLayers 3. И оно работает!
     //СМЫСЛ. СОЗДАЁТСЯ КНОПКА И ВРОДЕ КАК ЧТО-ТО КУДА-ТО НАСЛЕДУЕТСЯ (возможно функция передаётся OpenLayers, а возможно и нет)
     //БУДЕТ ВРЕМЯ - РАЗБЕРИСЬ, ТУТ ИНТЕРЕСНО
     /////////////////////////////////////////////////////////////////////////////////
@@ -115,9 +138,7 @@
        * @extends {ol.control.Control}
        * @param {Object=} opt_options Control options.
        */
-      app.SubcladesControl = function(opt_options) {
-
-        console.log("we are here, bro");
+      app.SubcladesControl = function(opt_options) {        
         var options = opt_options || {};
         //var this_ = this;//Не пригодилось, но не всё ещё потеряно, правда ведь?             
 
@@ -147,33 +168,242 @@
         divSubcladesControl.id='divSubcladesControl';//Пригодится для удаления чекбоксов.
         divSubcladesControl.style.display='none';
         divSubcladesControl.style.width='500px';
-        divSubcladesControl.style.height='500px';
-        divSubcladesControl.style['background-color']='rgba(0x22, 0x99, 0xcc, .7)';
-        divSubcladesControl.style.overflow='auto';
-        //divSubcladesControl.innerHTML='Hello people!';
-        divSubcladesControl.appendChild(document.createTextNode('Hello People!'));
-
-        var buttonApply = document.createElement('button');
-        buttonApply.innerHTML='Apply';
-        buttonApply.style.width='50px';
-        buttonApply.onclick=function(){alert('Sorry, function doesn\'t work yet. Please comeback later!');};
-        divSubcladesControl.appendChild(buttonApply);
-
+        divSubcladesControl.style.height='500px';        
+        //divSubcladesControl.style['background-color']='rgba(34,120,180,0.5)';
+        divSubcladesControl.style['background-color']='rgba(180,180,180,0.5)';
+        divSubcladesControl.style.overflow='auto';        
+        
+        //Кнопка Apply. Не понадобилась.
+        //var buttonApply = document.createElement('button');
+        //buttonApply.innerHTML='Apply';
+        //buttonApply.style.width='50px';
+        //buttonApply.onclick=function(){alert('Sorry, function doesn\'t work yet. Please comeback later!');};
+        //divSubcladesControl.appendChild(buttonApply);
+      
         divSubcladesControl.appendChild(document.createElement("br"));
         var i;
-        for(i=0;i<1000;i++)
+        for(i=0;i<subArray.length;i++)
         {
           var checkbox = document.createElement('input');
-          var label = document.createElement('label');
-          //he.innerHTML='"Subclade №'+i+'"';
-          //he.value='"Subclade №'+i+'"';
-          //he.setAttribute('value','My default value')
+          var label = document.createElement('label');          
           checkbox.type="checkbox";          
-          checkbox.id="subcladecheck_"+i;          
-          label.htmlFor = checkbox.id;
-          label.appendChild(document.createTextNode('Subclade №'+i));
+          checkbox.id="schk_"+subArray[i].subclade;
+          checkbox.value=subArray[i].subclade;
+          checkbox.onclick=function()
+          {
+            var this_=this;
+            //Если существует, то всё равно удаляем (т.е. надо либо удалять совсем, либо удалять перед обновлением (что вряд ли случится, кстати.))
+            if(markerLayers[this.value]!==undefined && markerLayers[this.value]!==undefined)
+            {
+                map.removeLayer(markerLayers[this.value]);
+                markerLayers[this.value]={};//отсутствует...как бы даже не undefined.                
+            }
+            if(this.checked===false) return;
+
+            var lbl=document.getElementById('l_'+this.value);
+            if(lbl.innerHTML==='') lbl.innerHTML='?Unknown';
+            var fSym=lbl.innerHTML.charAt(0);
+            var lCol=lbl.style.color;            
+            //Итак: формат запроса есть. первая буква есть, цвет есть.
+            //Надо: выполнить запрос, сграбить результат, отобразить на экране. просто как ... орбит дверная ручка.
+            $.ajax
+            ({
+              url:'http://www.semargl.me/hg-maps-data/',
+              type:'GET',
+              //type:'POST',
+              //data:'vetka=1',
+              data:'vetka='+this_.value,
+              //dataType:'json',
+              cache:false,
+              async:true,
+              success:function(data)
+              {
+                  var dataParsed;
+                  console.log(data);
+                  try
+                  {                    
+                     dataParsed=JSON.parse(data.replace(/^\uFEFF/, ''));   
+                  }
+                  catch(e)
+                  {
+                    console.log('Ошибка при разборе сообщения:'+data+'\nОписание ошибки:'+e);
+                  }
+                  //console.log(dataParsed);
+
+                  //Ну и вот тебе пожалуйста, три маркера.
+                  if(dataParsed['status']===undefined || dataParsed['status']!='ok') return;
+                  console.log(dataParsed);
+                  console.log('passed');
+                  //ну попробуем, почему б и нет
+                            ///////////////////////////
+                            //Тестовый массив маркеров
+                            ///////////////////////////                                                     
+                            
+                            //console.log(markers);
+                            //console.log('Markers count '+markers.length);
+
+
+                            var markers=dataParsed.markers;
+                            ///////////////////////////
+                            //Тестовый массив Features
+                            ///////////////////////////
+                            var newFeatures = new Array(markers.length);
+                            for (var i = 0; i < markers.length; ++i)
+                            {        
+                              newFeatures[i] = new ol.Feature({
+                               // type: 'point',
+                                name: markers[i].name,
+                                color: lCol,
+                                letter:fSym,
+                                geometry: new ol.geom.Point(ol.proj.fromLonLat([markers[i].lon,markers[i].lat]))
+                                });        
+                            }                          
+
+                            markerLayers[this_.value] = new ol.layer.Vector({
+                              source: new ol.source.Vector({
+                                features: newFeatures
+                              })
+                              ,
+                              style: function(feature) {
+                                //Отрисовывается в
+                                var fColor = lCol;
+                                var letter = fSym;
+                                var style = styleCache[fColor];
+                                if (!style) 
+                                {
+                                  style = new ol.style.Style({
+                                    image: new ol.style.Circle({
+                                      radius: 10,
+                                      stroke: new ol.style.Stroke({
+                                        color: '#fff'
+                                      }),
+                                      fill: new ol.style.Fill({
+                                        color: fColor
+                                      })
+                                    }),
+                                    text: new ol.style.Text({
+                                      text: letter,
+                                      fill: new ol.style.Fill({
+                                        color: '#fff'
+                                      })
+                                    })
+                                  });            
+                                  styleCache[fColor] = style;        
+                                }
+                                return style;
+                              }
+                            });
+                            map.addLayer(markerLayers[this_.value]);
+
+                  //Тут готово, а там придумаем, что ещё делать-то.
+                //console.log('ВОЗРАДЕУМСЯ!');
+                //console.log(data);
+                 //if(data.status!==undefined){               }
+              },
+              error:function(data)
+              {                    
+                console.log("Ошибка при выполнении скрипта:='"+JSON.stringify(data));
+                var dataParsed;
+                var dataTest='{"status": "ok", "markers": [{"lat": "40.0161858", "lon": "-80.7423", "kit": "174613"}, {"lat": "53.1830791", "lon": "19.354270000000042", "kit": "N2278"}, {"lat": "", "lon": "", "kit": "220225"}]}';
+                  try
+                  {                    
+                     dataParsed=JSON.parse(dataTest.replace(/^\uFEFF/, ''));   
+                  }
+                  catch(e)
+                  {
+                    console.log('Ошибка при разборе сообщения:'+dataTest+'\nОписание ошибки:'+e);
+                  }                  
+                  //Ну и вот тебе пожалуйста, три маркера.
+                  if(dataParsed['status']===undefined || dataParsed['status']!='ok') return;
+                  //console.log(dataParsed);
+                  //console.log('passed');
+                  //ну попробуем, почему б и нет
+                            ///////////////////////////
+                            //Тестовый массив маркеров
+                            ///////////////////////////
+                                                      
+                            var markers = new Array();
+  
+                            var i;
+                            for(i=0;i<100;i++)
+                            {
+                              var rancolor='rgba('+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+', 1.0)';
+                              var letter = String.fromCharCode(65+parseInt(Math.random()*26));
+                              //return letter.ToString();
+                              markers.push({"counter":i,"color":rancolor,"name":"Marker #"+i,"lon":(Math.random()*30+10),"lat":(Math.random()*30+30),"letter":letter});
+                            }
+                            //console.log(markers);
+                            //console.log('Markers count '+markers.length);
+
+
+                            //var markers=dataParsed.markers;
+                            ///////////////////////////
+                            //Тестовый массив Features
+                            ///////////////////////////
+                            var newFeatures = new Array(markers.length);
+                            for (var i = 0; i < markers.length; ++i)
+                            {        
+                              newFeatures[i] = new ol.Feature({
+                               // type: 'point',
+                                name: markers[i].name,
+                                color: lCol,
+                                letter:fSym,
+                                geometry: new ol.geom.Point(ol.proj.fromLonLat([markers[i].lon,markers[i].lat]))
+                                });        
+                            }                          
+
+                            markerLayers[this_.value] = new ol.layer.Vector({
+                              source: new ol.source.Vector({
+                                features: newFeatures
+                              })
+                              ,
+                              style: function(feature) {
+                                //Отрисовывается в
+                                var fColor = lCol;
+                                var letter = fSym;
+                                var style = styleCache[fColor];
+                                if (!style) 
+                                {
+                                  style = new ol.style.Style({
+                                    image: new ol.style.Circle({
+                                      radius: 10,
+                                      stroke: new ol.style.Stroke({
+                                        color: '#fff'
+                                      }),
+                                      fill: new ol.style.Fill({
+                                        color: fColor
+                                      })
+                                    }),
+                                    text: new ol.style.Text({
+                                      text: letter,
+                                      fill: new ol.style.Fill({
+                                        color: '#fff'
+                                      })
+                                    })
+                                  });            
+                                  styleCache[fColor] = style;        
+                                }
+                                return style;
+                              }
+                            });
+                            map.addLayer(markerLayers[this_.value]);
+              }
+  });
+
+            
+            //Ну что, зафигачим запрос прямо тут...ну не знаю...А давай!!!
+            //Хотя это некрасиво и ваще...впрочем...
+            //Всё же всякие динамические массивы рулят. Так-то.
+          }
+          //checkbox.name=subArray[i].name;//Возможно придётся отказаться от имени, даже лучше уже сейчас отказаться, меньше размер страницы.
+          //checkbox.setAttribute('subcolor',subArray[i].color);//Возможно придётся отказаться от цвета, даже лучше уже сейчас отказаться, меньше размер страницы.
+          //checkbox.setAttribute('firstchar',subArray[i].name.charAt(0));//Возможно придётся отказаться от этого, лучше посчитать во время нажатия.
+          label.id='l_'+subArray[i].subclade;
+          //label.htmlFor = checkbox.id;
+          label.appendChild(document.createTextNode(subArray[i].name));
           //label.style.color='rgba('+Math.random()*50+200 +', '+Math.random()*50+200+', '+Math.random()*50+200 +', .7)';          
-          label.style.color='rgba('+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+', 1.0)';
+          //label.style.color='rgba('+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+', 1.0)';
+          label.style.color=subArray[i].color;
           divSubcladesControl.appendChild(checkbox);
           divSubcladesControl.appendChild(label);
           divSubcladesControl.appendChild(document.createElement("br"));
@@ -346,17 +576,8 @@
           return style;
         }
       });
-      map.addLayer(markersLayer);     
+      //map.addLayer(markersLayer);
 
-      var subArray=[{vetka:"1", name:"R1a1",color:"#121212",checked:false},{vetka:"m445",name:"U5",color:"#77777",checked:true},{"vetka":"vetka","name":"T7","color":"rgba(12,14,15,1)"}];
-      console.log('subarray!');
-      console.log(subArray);
-      console.log(subArray[0]);
-      console.log(subArray[0].name);
-      console.log(subArray[2].name);
-
-
-      
      //http://dev.openlayers.org/examples/markers.html - пример со встроенными кнопками. ага.
 
      //Как добавлять много-много флажков на карту:
@@ -379,8 +600,13 @@
 
      //Оверлеи здесь! (ну всякие штуки, которые надо или не надо отображать на карте)
 
-
-
+     /*
+     Ну вот, пока можно сделать кликабельные чекбоксы, например:
+     функции, слои, вот это всё!
+     ох, не знаю, маловато знаний, чтобы сделать круто. Но должно получиться.
+     */
     </script>
+    <!--RLIN_MESSAGE
+     КОНЕЦ JS-скрипта ДЛЯ РАБОТЫ С КАРТОЙ--> 
   </body>
 </html>
