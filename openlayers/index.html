@@ -20,93 +20,77 @@
     <script src="js/jquery-2.2.3.min.js"></script>
     <!--<script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>-->
     <script src="js/bootstrap.min.js"></script>
-    <title>OpenLayers 3 example</title>
+    <title>OpenLayers 3 Subclades map test</title>
   </head>
   <body>
-    <h2>Supermap</h2>
-    <!--
-    <div id="mapWithControls" style="width:500px;height:500px;border:1px solid green;display:inline-block;z-index:1000;">
-      <div id="mapControls" style="border:1px solid red; width:500px;height:100px;position:absolute;background-color:#2299cc;">
-        <input type="checkbox" value="mecha" name="еьфу">Njabthh</input>
-        <input type="checkbox" value="mecha" name="еьфу">Njabthh</input>
-        <input type="checkbox" value="mecha" name="еьфу">Njabthh</input>
-      </div>
-      -->
+    <h2>Supermap of subclades preview</h2>   
       <div id="map" class="map">
         <div id="mapPopupMarker"></div>        
       </div>      
     <!--</div>-->
-    <script type="text/javascript">      
-
-        //По идее - всплывающее окно с текстом для субкладов (но поглядим.)
-      //вот с этим оверлеем и надо бы разобраться, вот что я вам скажу, дорогие мои.
-      var subcladesPopupElement = document.getElementById('mapPopupSubclades');
-      var subcladesPopup = new ol.Overlay({
-        element: subcladesPopupElement,
-        //positioning: 'bottom-center',
-        //positioning: 'top-left',
-        stopEvent: false,
-        offset: [0, 0]//смещение...вроде как какие задал координаты, такие и будут,да.
-      });
-
+    <script type="text/javascript">
     /////////////////////////////////////////////////////////////////////////////////
     //ВНИМАНИЕ! ДАЛЕЕ СЛЕДУЕТ КУСОК КОДА, КОТОРЫЙ Я НЕ ПОНИМАЮ ИЛИ В КОТОРОМ ЛЕНЮСЬ РАЗБИРАТЬСЯ
     //СМЫСЛ. СОЗДАЁТСЯ КНОПКА И ВРОДЕ КАК ЧТО-ТО КУДА-ТО НАСЛЕДУЕТСЯ (возможно функция передаётся OpenLayers, а возможно и нет)
     //БУДЕТ ВРЕМЯ - РАЗБЕРИСЬ, ТУТ ИНТЕРЕСНО
     /////////////////////////////////////////////////////////////////////////////////
-     window.app = {};
-      var app = window.app;
+     window.appio = {};
+      var app = window.appio;
       //
       // Define rotate to north control.
       //
 
 
       /**
-       * @constructor
+       * @constructor Вот таким образом создаётся новый элемент управления OpenLayers
        * @extends {ol.control.Control}
        * @param {Object=} opt_options Control options.
        */
-      app.RotateNorthControl = function(opt_options) {
+      app.SubcladesControl = function(opt_options) {
 
         console.log("we are here, bro");
         var options = opt_options || {};
+        //var this_ = this;//Не пригодилось, но не всё ещё потеряно, правда ведь?             
 
+        /////////////////////////////////////////////
+        //Это будет происходить при нажатии на кнопку Subclades
+        /////////////////////////////////////////////
+        var handleSubcladeControl = function()
+        {
+          var test=document.getElementById('divSubcladesControl');
+          if(test.style.display==='none') test.style.display='block';
+            else test.style.display='none';          
+          //map.removeLayer(vectorLayer);//Работаит, впрочем и должно было.
+        }; 
+
+        ///////////////////////////
+        //А вот и сама кнопка
+        ///////////////////////////
         var button = document.createElement('button');
         button.innerHTML = 'Subclades';
         button.style.width='100%';
-
-        var this_ = this;        
-        var handleRotateNorth = function()
-        {
-          var test=document.getElementById('divWithInfo');
-          if(test.style.display==='none') test.style.display='block';
-            else test.style.display='none';
-          subcladesPopup.setPosition(ol.proj.fromLonLat([37.36,55.45]));
-        };
-        //handleRotateNorth заменить на открытие Popup-окошка с субкладами (можно даже не то чтобы открыть, а следать видимым)
-        button.addEventListener('click', handleRotateNorth, false);
-        button.addEventListener('touchstart', handleRotateNorth, false);
+        button.id='SubcladesControlButton';//Понадобится на случай перевода        
+        button.addEventListener('click', handleSubcladeControl, false);
+        button.addEventListener('touchstart', handleSubcladeControl, false);
 
 
-        var divWithInfo = document.createElement('div');
-        
-        divWithInfo.id='divWithInfo';
-        divWithInfo.style.display='none';
-        divWithInfo.style.width='500px';
-        divWithInfo.style.height='500px';
-        divWithInfo.style['background-color']='rgba(0x22, 0x99, 0xcc, .7)';
-        divWithInfo.style.overflow='auto';        
-
-        //divWithInfo.innerHTML='Hello people!';
-        divWithInfo.appendChild(document.createTextNode('Hello People!'));
+        var divSubcladesControl = document.createElement('div');        
+        divSubcladesControl.id='divSubcladesControl';//Пригодится для удаления чекбоксов.
+        divSubcladesControl.style.display='none';
+        divSubcladesControl.style.width='500px';
+        divSubcladesControl.style.height='500px';
+        divSubcladesControl.style['background-color']='rgba(0x22, 0x99, 0xcc, .7)';
+        divSubcladesControl.style.overflow='auto';
+        //divSubcladesControl.innerHTML='Hello people!';
+        divSubcladesControl.appendChild(document.createTextNode('Hello People!'));
 
         var buttonApply = document.createElement('button');
         buttonApply.innerHTML='Apply';
         buttonApply.style.width='50px';
         buttonApply.onclick=function(){alert('Sorry, function doesn\'t work yet. Please comeback later!');};
-        divWithInfo.appendChild(buttonApply);
+        divSubcladesControl.appendChild(buttonApply);
 
-        divWithInfo.appendChild(document.createElement("br"));
+        divSubcladesControl.appendChild(document.createElement("br"));
         var i;
         for(i=0;i<7;i++)
         {
@@ -121,15 +105,15 @@
           label.appendChild(document.createTextNode('Subclade №'+i));
           //label.style.color='rgba('+Math.random()*50+200 +', '+Math.random()*50+200+', '+Math.random()*50+200 +', .7)';          
           label.style.color='rgba('+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+', 1.0)';
-          divWithInfo.appendChild(checkbox);
-          divWithInfo.appendChild(label);
-          divWithInfo.appendChild(document.createElement("br"));
+          divSubcladesControl.appendChild(checkbox);
+          divSubcladesControl.appendChild(label);
+          divSubcladesControl.appendChild(document.createElement("br"));
         }
 
         var element = document.createElement('div');
         element.className = 'rotate-north ol-unselectable ol-control';
         element.appendChild(button);
-        element.appendChild(divWithInfo);
+        element.appendChild(divSubcladesControl);
 
         ol.control.Control.call(this, {
           element: element,
@@ -137,16 +121,24 @@
         });
 
       };
-      ol.inherits(app.RotateNorthControl, ol.control.Control);
+      ol.inherits(app.SubcladesControl, ol.control.Control);
 
       //КОНЕЦ СТРАННОГО КОДА
       ///////////////////////////
 
 
 
-
+    ///////////////////////////////////////////////////////////////
+    //Стили. Пока для флажков. Но будут меняться. Кардинально.
+    ///////////////////////////////////////////////////////////////
     var styles = {        
         'icon': new ol.style.Style({
+          image: new ol.style.Icon({
+            anchor: [0.5, 1],
+            src: 'images/testflag_small.png'
+          })       
+        }),
+        'point': new ol.style.Style({
           image: new ol.style.Icon({
             anchor: [0.5, 1],
             src: 'images/testflag_small.png'
@@ -154,6 +146,40 @@
         })
       };
 
+      
+
+      ///////////////////////////
+      //Главный объект OpenLayers
+      //Создашь - и нет пути назад
+      ///////////////////////////
+      var map = new ol.Map({
+        controls: ol.control.defaults({
+          attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
+            collapsible: false
+          })
+        }).extend([
+          new app.SubcladesControl()
+        ]),
+        target: 'map'});     
+      
+
+      map.setView(new ol.View({
+        center: ol.proj.fromLonLat([37.36,55.45]),
+        zoom: 4
+        //,rotation: Math.PI / 5
+      }));
+
+      ////////////////////////////////////
+      //Собственно, изображение карты
+      ////////////////////////////////////
+      var tileLayer=new ol.layer.Tile({
+            source: new ol.source.OSM()            
+          });      
+      map.addLayer(tileLayer);
+
+      ////////////////////////////////////
+      //А тут у нас будут маркеры. Пока проект
+      ////////////////////////////////////
       var startMarker = new ol.Feature({
         type: 'icon',
         name: 'Null Island',
@@ -167,9 +193,9 @@
         population: 3000,
         rainfall: 400,
         geometry: new ol.geom.Point(ol.proj.fromLonLat([37.36,55.45]))
-      });
+      });     
 
-      var vectorLayer = new ol.layer.Vector({
+      var testLayer = new ol.layer.Vector({
         source: new ol.source.Vector({
           features: [startMarker, endMarker]
         })
@@ -178,37 +204,14 @@
           return styles[feature.get('type')];
         }
       });
+      map.addLayer(testLayer);
+      //Как добавили, так и удалим!
+      //map.removeLayer(tileLayer);
 
-      var map = new ol.Map({
-        controls: ol.control.defaults({
-          attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
-            collapsible: false
-          })
-        }).extend([
-          new app.RotateNorthControl()
-        ]),
-        target: 'map'});
-
-      //Добавляем оверлей с субкладами (ну по крайней мере мы думаем, что там будут субклады)
-      //Но только после создания карты, ага. Не до!
-      //map.addOverlay(subcladesPopup);
-      subcladesPopup.setPosition(ol.proj.fromLonLat([37.36,55.45]));
-      //subcladesPopup.setPosition(ol.proj.fromLonLat([37.36,55.45]));
-      //subcladesPopup.setPosition(ol.proj.fromLonLat(ol.geom.Point([150, 150])));
-      
-
-      map.setView(new ol.View({
-        center: ol.proj.fromLonLat([37.36,55.45]),
-        zoom: 4,
-        rotation: Math.PI / 5
-      }));
-      var tileLayer=new ol.layer.Tile({
-            source: new ol.source.OSM()            
-          });
-      map.addLayer(tileLayer);
-      map.addLayer(vectorLayer);
-
-      //всплываюсчее окно с текстом для маркера
+      /////////////////////////////////////////////
+      //Всплываюсчее окно с текстом для маркера
+      //Оверлей. Типа перекрывается.
+      /////////////////////////////////////////////
       var element = document.getElementById('mapPopupMarker');
       var popup = new ol.Overlay({
         element: element,
@@ -218,10 +221,10 @@
       });
       map.addOverlay(popup);
    
-      
 
-
-      // Отображение всплывающего окна, ага. display popup on click
+      ///////////////////////////
+      //Popup для маркеров
+      ///////////////////////////
       map.on('click', function(evt) {
         var feature = map.forEachFeatureAtPixel(evt.pixel,
             function(feature) {
@@ -230,18 +233,93 @@
         if (feature) {
           var coordinates = feature.getGeometry().getCoordinates();
           popup.setPosition(coordinates);
+          console.log('Feature data');          
+          console.log(feature.get('name'));
+          var vass=feature.get('name');
           $(element).popover({
             'placement': 'top',
             'html': true,
-            'content': feature.get('name')
+            //'content': feature.get('name')
+            'content': vass+'...yet can\'t reload content :('
           });
+          //popup.setContent();
+          //$(element).popover.setContent();
+          $(element).popover('setContent');
           $(element).popover('show');
         } else {
           $(element).popover('destroy');
         }
       });
 
-      //map.removeLayer(tileLayer);
+
+      
+      ///////////////////////////
+      //Тестовый массив маркеров
+      ///////////////////////////
+      var markers = new Array();
+      var i;
+      for(i=0;i<1000;i++)
+      {
+        var rancolor='rgba('+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+', 1.0)';
+        var letter = String.fromCharCode(65+parseInt(Math.random()*26));
+        //return letter.ToString();
+        markers.push({"counter":i,"color":rancolor,"name":"Marker #"+i,"Lon":(Math.random()*30+10),"Lat":(Math.random()*30+30),"letter":letter});
+      }
+     // console.log(markers);
+      //console.log('Markers count '+markers.length);
+
+      ///////////////////////////
+      //Тестовый массив Features
+      ///////////////////////////
+      var newFeatures = new Array(markers.length);
+      for (var i = 0; i < markers.length; ++i)
+      {        
+        newFeatures[i] = new ol.Feature({
+         // type: 'point',
+          name: markers[i].name,
+          color: markers[i].color,
+          letter:markers[i].letter,
+          geometry: new ol.geom.Point(ol.proj.fromLonLat([markers[i].Lon,markers[i].Lat]))
+          });        
+      }
+
+      var styleCache = {};//Кэш стилей (на самом деле цветов)
+
+      var markersLayer = new ol.layer.Vector({
+        source: new ol.source.Vector({
+          features: newFeatures
+        })
+        ,
+        style: function(feature) {
+          //Отрисовывается в
+          var fColor = feature.get('color');
+          var letter = feature.get('letter');
+          var style = styleCache[fColor];
+          if (!style) 
+          {
+            style = new ol.style.Style({
+              image: new ol.style.Circle({
+                radius: 10,
+                stroke: new ol.style.Stroke({
+                  color: '#fff'
+                }),
+                fill: new ol.style.Fill({
+                  color: feature.get('color')
+                })
+              }),
+              text: new ol.style.Text({
+                text: letter,
+                fill: new ol.style.Fill({
+                  color: '#fff'
+                })
+              })
+            });            
+            styleCache[fColor] = style;        
+          }
+          return style;
+        }
+      });
+      map.addLayer(markersLayer);
       
      //http://dev.openlayers.org/examples/markers.html - пример со встроенными кнопками. ага.
 
