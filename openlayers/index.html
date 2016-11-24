@@ -382,11 +382,11 @@
                               var rancolor='rgba('+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+', 1.0)';
                               var letter = String.fromCharCode(65+parseInt(Math.random()*26));
                               //return letter.ToString();
-                              markers.push({"counter":i,"color":rancolor,"name":"Marker #"+i,"lon":(Math.random()*30+10),"lat":(Math.random()*30+30),"letter":letter,"kit":("DebugData_"+i)});
+                              markers.push({"counter":i,"color":rancolor,"name":"Marker #"+i,"lon":(Math.random()*30+30),"lat":(Math.random()*30+10),"letter":letter,"kit":("DebugData_"+i)});
                             }
                             
 
-                            var markers=dataParsed.markers;
+                            //var markers=dataParsed.markers;
 
                             console.log(markers);
                             console.log('Markers count '+markers.length);
