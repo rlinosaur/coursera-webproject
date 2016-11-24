@@ -302,7 +302,9 @@
                                 name: "Kit #"+markers[i].kit,
                                 color: lCol,
                                 letter:fSym,
-                                geometry: new ol.geom.Point(ol.proj.fromLonLat([markers[i].lon,markers[i].lat]))
+                                //geometry: new ol.geom.Point(ol.proj.fromLonLat([markers[i].lon,markers[i].lat]))
+                                //geometry: new ol.geom.Point(ol.proj.transform([markers[i].lon, markers[i].lat], 'EPSG:4326', 'EPSG:3857'))
+                                geometry: new ol.geom.Point(ol.proj.transform([parseFloat(markers[i].lat), parseFloat(markers[i].lon)], 'EPSG:4326', 'EPSG:3857'))
                                 });        
                             }                          
 
@@ -351,9 +353,9 @@
               {                    
                 console.log("Ошибка при выполнении скрипта:='"+JSON.stringify(data));
 
-                /*
+                
                 var dataParsed;
-                var dataTest='{"status": "ok", "markers": [{"lat": "40.0161858", "lon": "-80.7423", "kit": "174613"}, {"lat": "53.1830791", "lon": "19.354270000000042", "kit": "N2278"}, {"lat": "", "lon": "", "kit": "220225"}]}';
+                var dataTest='{"status": "ok", "markers": [{"lat": "127.147957", "lon": "35.8242226", "kit": "286661"}]}';
                   try
                   {                    
                      dataParsed=JSON.parse(dataTest.replace(/^\uFEFF/, ''));   
@@ -366,7 +368,7 @@
                   if(dataParsed['status']===undefined || dataParsed['status']!='ok') return;
                   console.log(dataParsed);
                   console.log('passed');
-                  */
+                  
                   //ну попробуем, почему б и нет
                             ///////////////////////////
                             //Тестовый массив маркеров
@@ -382,23 +384,38 @@
                               //return letter.ToString();
                               markers.push({"counter":i,"color":rancolor,"name":"Marker #"+i,"lon":(Math.random()*30+10),"lat":(Math.random()*30+30),"letter":letter,"kit":("DebugData_"+i)});
                             }
-                            //console.log(markers);
-                            //console.log('Markers count '+markers.length);
+                            
+
+                            var markers=dataParsed.markers;
+
+                            console.log(markers);
+                            console.log('Markers count '+markers.length);
 
 
-                            //var markers=dataParsed.markers;
                             ///////////////////////////
                             //Тестовый массив Features
                             ///////////////////////////
                             var newFeatures = new Array(markers.length);
                             for (var i = 0; i < markers.length; ++i)
-                            {        
+                            {     
+                            /*   
+                                console.log('markers!!:');
+                                console.log('lat:'+markers[i].lat);
+                                console.log('lon:'+markers[i].lon);
+                                console.log('first:');
+                                console.log(ol.proj.transform([markers[i].lat, 35.8242226], 'EPSG:4326', 'EPSG:3857'));
+                                console.log('second:');
+                                console.log(ol.proj.transform([parseFloat(markers[i].lat), parseFloat(markers[i].lon)], 'EPSG:4326', 'EPSG:3857'));
+                                */
                               newFeatures[i] = new ol.Feature({
                                // type: 'point',
                                 name: "Kit #"+markers[i].kit,
                                 color: '#777777',
-                                letter:'?',
-                                geometry: new ol.geom.Point(ol.proj.fromLonLat([markers[i].lon,markers[i].lat]))
+                                letter:'?',                                
+                                //geometry: new ol.geom.Point(ol.proj.transform([markers[i].lat, markers[i].lon], 'EPSG:4326', 'EPSG:3857'))
+                                //geometry: new ol.geom.Point(ol.proj.transform([markers[i].lat, 35.8242226], 'EPSG:4326', 'EPSG:3857'))
+                                //geometry: new ol.geom.Point(ol.proj.fromLonLat([parseFloat(markers[i].lon),parseFloat(markers[i].lat)]))
+                                geometry: new ol.geom.Point(ol.proj.transform([parseFloat(markers[i].lat), parseFloat(markers[i].lon)], 'EPSG:4326', 'EPSG:3857'))
                                 });        
                             }                          
 
@@ -544,20 +561,27 @@
       });
 
 
+      //var coordTest=[{"lon":37.36,"lat":55.45},{"lon":80.36,"lat":80.45}];
       
       ///////////////////////////
       //Тестовый массив маркеров
       ///////////////////////////
+/*
       var markers = new Array();
-      var i;
-      for(i=0;i<1;i++)
-      {
-        var rancolor='rgba('+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+', 1.0)';
-        var letter = String.fromCharCode(65+parseInt(Math.random()*26));
-        //return letter.ToString();
-        markers.push({"counter":i,"color":rancolor,"name":"Marker #"+i,"Lon":(37.36),"Lat":(55.45),"letter":letter});
-      }
-     // console.log(markers);
+
+      
+      var rancolor='rgba('+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+', 1.0)';       
+         markers.push({"counter":i,"color":"green","name":"Marker #"+i,"Lon":(55.45),"Lat":(37.36),"letter":"M"});
+          markers.push({"counter":i,"color":"red","name":"Marker #"+i,"Lon":(35.8242226),"Lat":(127.147957),"letter":"K"});
+      var i;      
+      //for(i=0;i<2;i++)
+      //{
+//        var rancolor='rgba('+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+', 1.0)';
+        //var letter = String.fromCharCode(65+parseInt(Math.random()*26));        
+        //markers.push({"counter":i,"color":rancolor,"name":"Marker #"+i,"Lon":(37.36),"Lat":(89.147957),"letter":letter});
+      //}
+      
+     console.log(markers);
       //console.log('Markers count '+markers.length);
 
       ///////////////////////////
@@ -571,7 +595,11 @@
           name: markers[i].name,
           color: markers[i].color,
           letter:markers[i].letter,
-          geometry: new ol.geom.Point(ol.proj.fromLonLat([markers[i].Lon,markers[i].Lat]))
+          //geometry: new ol.geom.Point(ol.proj.fromLonLat([markers[i].Lon,markers[i].Lat]))
+          //geometry: new ol.geom.Point(ol.proj.transform(markers[i].Lat, markers[i].Lon, 'EPSG:4326', 'EPSG:3857'))
+          geometry: new ol.geom.Point(ol.proj.transform([markers[i].Lat, markers[i].Lon], 'EPSG:4326', 'EPSG:3857'))
+          //geometry: new ol.geom.Point(ol.proj.transform([markers[i].Lon, markers[i].Lat], 'EPSG:4326', 'EPSG:3857'))
+          
           });        
       }
 
@@ -612,7 +640,7 @@
         }
       });
       map.addLayer(markersLayer);
-  
+  */
      //http://dev.openlayers.org/examples/markers.html - пример со встроенными кнопками. ага.
 
      //Как добавлять много-много флажков на карту:
