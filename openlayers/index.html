@@ -218,13 +218,15 @@
         divSubcladesControl.style.display='none';
         divSubcladesControl.style.width='100%';
         var mapElmnt=document.getElementById('mapSubclades');
+        //Скорее всего фишка в том, что попробовал узнать размер карты раньше, чем карта появилась.
         /*
         if(mapElmnt!==undefined)
             divSubcladesControl.style.height=(mapElmnt.offsetHeight-100)+'px';        
         else
             divSubcladesControl.style.height='500px';          
           */
-        divSubcladesControl.style.height='900px';
+        divSubcladesControl.style.height='480px';
+        //divSubcladesControl.style.height='900px';
         divSubcladesControl.style['background-color']='rgba(180,180,180,0.5)';
         //divSubcladesControl.style.overflow='auto';        
         divSubcladesControl.style['overflow-y']='scroll';
