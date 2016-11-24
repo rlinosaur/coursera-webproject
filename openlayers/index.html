@@ -5,10 +5,11 @@
       <!--RLIN_MESSAGE
       НАЧАЛО КУСКА HTML <HEAD> ДЛЯ РАБОТЫ С КАРТОЙ
       Ссылки на библиотеки js и таблицы css можно заменить на внешние
-      -->   
+      -->
+      <!--
       <link rel="stylesheet" href="https://openlayers.org/en/v3.19.1/css/ol.css" type="text/css">
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-
+-->
       <link rel="stylesheet" href="css/ol.css" />
       <link rel="stylesheet" href="css/bootstrap.min.css">
     <style>
@@ -24,11 +25,11 @@
         top: 80px;
       }
     </style>
-
+<!--
     <script src="https://openlayers.org/en/v3.19.1/build/ol.js"></script>
     <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-
+-->
 
     <script src="js/ol.js"></script>
     <script src="js/jquery-2.2.3.min.js"></script>    
@@ -114,7 +115,8 @@
     var subArray=[
            {subclade:"m129", name:'A-Unknown',color:"green"}
           ,{subclade:"m1164",name:'R1b-P312 > Z40481 > ZZ11 > DF27/S250 > Z195/Z196',color:"rgba(180,120,34,0.5)"}
-          ,{subclade:"m4",name:'R1a-Z92+, Y4459+, YP617+, YP569+ "Veneds"  (please, order R1a-Z280 SNP Pack)',color:"#2299cc"}];
+          ,{subclade:"m4",name:'R1a-Z92+, Y4459+, YP617+, YP569+ "Veneds"  (please, order R1a-Z280 SNP Pack)',color:"#2299cc"}          
+          ];
 
 
     var styleCache = {};//Кэш стилей (на самом деле цветов). Должно ускорить работу.
@@ -167,18 +169,14 @@
         var divSubcladesControl = document.createElement('div');        
         divSubcladesControl.id='divSubcladesControl';//Пригодится для удаления чекбоксов.
         divSubcladesControl.style.display='none';
-        divSubcladesControl.style.width='500px';
-        divSubcladesControl.style.height='500px';        
-        //divSubcladesControl.style['background-color']='rgba(34,120,180,0.5)';
+        divSubcladesControl.style.width='100%';
+        var mapElmnt=document.getElementById('mapSubclades');
+        if(mapElmnt!==undefined)
+            divSubcladesControl.style.height=(mapElmnt.offsetHeight-100)+'px';        
+        else
+            divSubcladesControl.style.height='500px';          
         divSubcladesControl.style['background-color']='rgba(180,180,180,0.5)';
         divSubcladesControl.style.overflow='auto';        
-        
-        //Кнопка Apply. Не понадобилась.
-        //var buttonApply = document.createElement('button');
-        //buttonApply.innerHTML='Apply';
-        //buttonApply.style.width='50px';
-        //buttonApply.onclick=function(){alert('Sorry, function doesn\'t work yet. Please comeback later!');};
-        //divSubcladesControl.appendChild(buttonApply);
       
         divSubcladesControl.appendChild(document.createElement("br"));
         var i;
@@ -213,7 +211,7 @@
               //type:'POST',
               //data:'vetka=1',
               data:'vetka='+this_.value,
-              //dataType:'json',
+              dataType:'html',
               cache:false,
               async:true,
               success:function(data)
@@ -232,12 +230,9 @@
 
                   //Ну и вот тебе пожалуйста, три маркера.
                   if(dataParsed['status']===undefined || dataParsed['status']!='ok') return;
-                  console.log(dataParsed);
-                  console.log('passed');
-                  //ну попробуем, почему б и нет
-                            ///////////////////////////
-                            //Тестовый массив маркеров
-                            ///////////////////////////                                                     
+                  //console.log(dataParsed);
+                  //console.log('passed');
+                  //ну попробуем, почему б и нет                                                                     
                             
                             //console.log(markers);
                             //console.log('Markers count '+markers.length);
@@ -252,7 +247,7 @@
                             {        
                               newFeatures[i] = new ol.Feature({
                                // type: 'point',
-                                name: markers[i].name,
+                                name: "Kit #"+markers[i].kit,
                                 color: lCol,
                                 letter:fSym,
                                 geometry: new ol.geom.Point(ol.proj.fromLonLat([markers[i].lon,markers[i].lat]))
@@ -303,6 +298,8 @@
               error:function(data)
               {                    
                 console.log("Ошибка при выполнении скрипта:='"+JSON.stringify(data));
+
+                /*
                 var dataParsed;
                 var dataTest='{"status": "ok", "markers": [{"lat": "40.0161858", "lon": "-80.7423", "kit": "174613"}, {"lat": "53.1830791", "lon": "19.354270000000042", "kit": "N2278"}, {"lat": "", "lon": "", "kit": "220225"}]}';
                   try
@@ -315,8 +312,9 @@
                   }                  
                   //Ну и вот тебе пожалуйста, три маркера.
                   if(dataParsed['status']===undefined || dataParsed['status']!='ok') return;
-                  //console.log(dataParsed);
-                  //console.log('passed');
+                  console.log(dataParsed);
+                  console.log('passed');
+                  */
                   //ну попробуем, почему б и нет
                             ///////////////////////////
                             //Тестовый массив маркеров
@@ -325,12 +323,12 @@
                             var markers = new Array();
   
                             var i;
-                            for(i=0;i<100;i++)
+                            for(i=0;i<50;i++)
                             {
                               var rancolor='rgba('+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+', 1.0)';
                               var letter = String.fromCharCode(65+parseInt(Math.random()*26));
                               //return letter.ToString();
-                              markers.push({"counter":i,"color":rancolor,"name":"Marker #"+i,"lon":(Math.random()*30+10),"lat":(Math.random()*30+30),"letter":letter});
+                              markers.push({"counter":i,"color":rancolor,"name":"Marker #"+i,"lon":(Math.random()*30+10),"lat":(Math.random()*30+30),"letter":letter,"kit":("DebugData_"+i)});
                             }
                             //console.log(markers);
                             //console.log('Markers count '+markers.length);
@@ -345,9 +343,9 @@
                             {        
                               newFeatures[i] = new ol.Feature({
                                // type: 'point',
-                                name: markers[i].name,
-                                color: lCol,
-                                letter:fSym,
+                                name: "Kit #"+markers[i].kit,
+                                color: '#777777',
+                                letter:'?',
                                 geometry: new ol.geom.Point(ol.proj.fromLonLat([markers[i].lon,markers[i].lat]))
                                 });        
                             }                          
@@ -359,8 +357,8 @@
                               ,
                               style: function(feature) {
                                 //Отрисовывается в
-                                var fColor = lCol;
-                                var letter = fSym;
+                                var fColor = '#777777';
+                                var letter = '?';
                                 var style = styleCache[fColor];
                                 if (!style) 
                                 {
@@ -390,19 +388,10 @@
               }
   });
 
-            
-            //Ну что, зафигачим запрос прямо тут...ну не знаю...А давай!!!
-            //Хотя это некрасиво и ваще...впрочем...
-            //Всё же всякие динамические массивы рулят. Так-то.
-          }
-          //checkbox.name=subArray[i].name;//Возможно придётся отказаться от имени, даже лучше уже сейчас отказаться, меньше размер страницы.
-          //checkbox.setAttribute('subcolor',subArray[i].color);//Возможно придётся отказаться от цвета, даже лучше уже сейчас отказаться, меньше размер страницы.
-          //checkbox.setAttribute('firstchar',subArray[i].name.charAt(0));//Возможно придётся отказаться от этого, лучше посчитать во время нажатия.
-          label.id='l_'+subArray[i].subclade;
-          //label.htmlFor = checkbox.id;
-          label.appendChild(document.createTextNode(subArray[i].name));
-          //label.style.color='rgba('+Math.random()*50+200 +', '+Math.random()*50+200+', '+Math.random()*50+200 +', .7)';          
-          //label.style.color='rgba('+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+', 1.0)';
+
+          }          
+          label.id='l_'+subArray[i].subclade;          
+          label.appendChild(document.createTextNode(subArray[i].name));          
           label.style.color=subArray[i].color;
           divSubcladesControl.appendChild(checkbox);
           divSubcladesControl.appendChild(label);
@@ -424,15 +413,6 @@
 
       //КОНЕЦ СТРАННОГО КОДА
       ///////////////////////////
-
-
-
-    ///////////////////////////////////////////////////////////////
-    //Стили. Пока для флажков. Но будут меняться. Кардинально.
-    ///////////////////////////////////////////////////////////////
-    var styles = {};
-
-      
 
       ///////////////////////////
       //Главный объект OpenLayers
@@ -489,27 +469,30 @@
             });
         if (feature) {
           var coordinates = feature.getGeometry().getCoordinates();
-          popup.setPosition(coordinates);
-          console.log('Feature data');          
-          console.log(feature.get('name'));
-          var vass=feature.get('name');
-          $(element).popover({
-            'placement': 'top',
-            'html': true,
-            //'content': feature.get('name')
-            'content': vass+'...yet can\'t reload content :('
-          });
-          //popup.setContent();
-          //$(element).popover.setContent();
-          $(element).popover('setContent');
-          $(element).popover('show');
+          popup.setPosition(coordinates);          
+          var popid=element.getAttribute('aria-describedby');
+          if($('#'+popid+' .popover-content').html()===undefined)
+          {
+            $(element).popover({
+              'placement': 'top',
+              'html': true,              
+              'content': feature.get('name')
+            });            
+            $(element).popover('show');           
+            }
+          else
+          {
+            $('#'+popid+' .popover-content').html(feature.get('name'));
+          }
+          
         } else {
+          console.log('Destroy popover1');
           $(element).popover('destroy');
         }
       });
 
 
-      
+      /*
       ///////////////////////////
       //Тестовый массив маркеров
       ///////////////////////////
@@ -577,7 +560,7 @@
         }
       });
       //map.addLayer(markersLayer);
-
+  */
      //http://dev.openlayers.org/examples/markers.html - пример со встроенными кнопками. ага.
 
      //Как добавлять много-много флажков на карту:
