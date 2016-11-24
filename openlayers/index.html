@@ -306,7 +306,8 @@
                                 letter:fSym,
                                 //geometry: new ol.geom.Point(ol.proj.fromLonLat([markers[i].lon,markers[i].lat]))
                                 //geometry: new ol.geom.Point(ol.proj.transform([markers[i].lon, markers[i].lat], 'EPSG:4326', 'EPSG:3857'))
-                                geometry: new ol.geom.Point(ol.proj.transform([parseFloat(markers[i].lat), parseFloat(markers[i].lon)], 'EPSG:4326', 'EPSG:3857'))
+                                //geometry: new ol.geom.Point(ol.proj.transform([parseFloat(markers[i].lat), parseFloat(markers[i].lon)], 'EPSG:4326', 'EPSG:3857'))
+                                geometry: new ol.geom.Point(ol.proj.transform([parseFloat(markers[i].lon), parseFloat(markers[i].lat)], 'EPSG:4326', 'EPSG:3857'))
                                 });        
                             }                          
 
@@ -357,7 +358,7 @@
 
                 
                 var dataParsed;
-                var dataTest='{"status": "ok", "markers": [{"lat": "127.147957", "lon": "35.8242226", "kit": "21243"}]}';
+                var dataTest='{"status": "ok", "markers": [{"lat": "35.8242226", "lon": "127.147957", "kit": "21243"}]}';
                   try
                   {                    
                      dataParsed=JSON.parse(dataTest.replace(/^\uFEFF/, ''));   
@@ -388,7 +389,7 @@
                             }
                             
 
-                            //var markers=dataParsed.markers;
+                            var markers=dataParsed.markers;
 
                             console.log(markers);
                             console.log('Markers count '+markers.length);
@@ -417,7 +418,8 @@
                                 //geometry: new ol.geom.Point(ol.proj.transform([markers[i].lat, markers[i].lon], 'EPSG:4326', 'EPSG:3857'))
                                 //geometry: new ol.geom.Point(ol.proj.transform([markers[i].lat, 35.8242226], 'EPSG:4326', 'EPSG:3857'))
                                 //geometry: new ol.geom.Point(ol.proj.fromLonLat([parseFloat(markers[i].lon),parseFloat(markers[i].lat)]))
-                                geometry: new ol.geom.Point(ol.proj.transform([parseFloat(markers[i].lat), parseFloat(markers[i].lon)], 'EPSG:4326', 'EPSG:3857'))
+                                //geometry: new ol.geom.Point(ol.proj.transform([parseFloat(markers[i].lat), parseFloat(markers[i].lon)], 'EPSG:4326', 'EPSG:3857'))
+                                geometry: new ol.geom.Point(ol.proj.transform([parseFloat(markers[i].lon), parseFloat(markers[i].lat)], 'EPSG:4326', 'EPSG:3857'))
                                 });        
                             }                          
 
@@ -501,7 +503,7 @@
       
 
       map.setView(new ol.View({
-        center: ol.proj.fromLonLat([37.36,55.45]),
+        center: ol.proj.transform([37.36,55.45], 'EPSG:4326', 'EPSG:3857'),
         zoom: 4
         //,rotation: Math.PI / 5
       }));
