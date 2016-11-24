@@ -227,8 +227,8 @@
         divSubcladesControl.style.height='900px';
         divSubcladesControl.style['background-color']='rgba(180,180,180,0.5)';
         //divSubcladesControl.style.overflow='auto';        
-        divSubcladesControl.style['overflow-x']='scroll';
-        divSubcladesControl.style['overflow-y']='auto';
+        divSubcladesControl.style['overflow-y']='scroll';
+        divSubcladesControl.style['overflow-x']='auto';
       
         divSubcladesControl.appendChild(document.createElement("br"));
         var i;
@@ -544,18 +544,18 @@
       });
 
 
-      /*
+      
       ///////////////////////////
       //Тестовый массив маркеров
       ///////////////////////////
       var markers = new Array();
       var i;
-      for(i=0;i<1000;i++)
+      for(i=0;i<1;i++)
       {
         var rancolor='rgba('+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+','+parseInt(200-Math.random()*200)+', 1.0)';
         var letter = String.fromCharCode(65+parseInt(Math.random()*26));
         //return letter.ToString();
-        markers.push({"counter":i,"color":rancolor,"name":"Marker #"+i,"Lon":(Math.random()*30+10),"Lat":(Math.random()*30+30),"letter":letter});
+        markers.push({"counter":i,"color":rancolor,"name":"Marker #"+i,"Lon":(37.36),"Lat":(55.45),"letter":letter});
       }
      // console.log(markers);
       //console.log('Markers count '+markers.length);
@@ -611,8 +611,8 @@
           return style;
         }
       });
-      //map.addLayer(markersLayer);
-  */
+      map.addLayer(markersLayer);
+  
      //http://dev.openlayers.org/examples/markers.html - пример со встроенными кнопками. ага.
 
      //Как добавлять много-много флажков на карту:
